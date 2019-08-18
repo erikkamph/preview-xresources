@@ -82,6 +82,7 @@ def preview_theme(path):
                     value = "#" + line.split("#")[1]
                     value = value.strip("\r").strip("\n")
                     print("\033]11;" + value + "\007", end="")
+    call("ls")
 
 
 def preview(files, output, start, themes_location):
@@ -94,16 +95,17 @@ def preview(files, output, start, themes_location):
         x = 1
     maximum = len(files)
     while True:
-        print("\033[s", end="")
-        print(files[x] + " enter to continue, s to save, q to quit:", end="")
+        print(files[x])
         preview_theme(files[x])
+        progress(x, maximum)
+        print("\033[s", end="")
+        print("Enter to continue, s to save, q to quit:", end="")
         choice = str(input())
         if choice == "s":
             save(files[x])
             break
         elif choice == "q":
             break
-        progress(x, maximum)
         print("\033[u\033[2K", end="")
         x += 1
         if x >= maximum:
