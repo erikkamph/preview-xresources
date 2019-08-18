@@ -4,7 +4,6 @@ import fileinput
 import sys
 import argparse
 from subprocess import call
-import keyboard
 
 
 def clear():
@@ -75,32 +74,40 @@ def preview_theme(path):
         for line in file.readlines():
             if "*.foreground" in line:
                 if "#" in line:
-                    value = "#" + line.split("#")[1] + "\007"
-                    print("\033]10;" + value, end="")
+                    value = "#" + line.split("#")[1]
+                    value = value.strip("\r").strip("\n")
+                    print("\033]10;" + value + "\007", end="")
             if "*.background" in line:
                 if "#" in line:
-                    value = "#" + line.split("#")[1] + "\007"
-                    print("\033]11;" + value, end="")
+                    value = "#" + line.split("#")[1]
+                    value = value.strip("\r").strip("\n")
+                    print("\033]11;" + value + "\007", end="")
 
 
-def preview(files, output):
-    x = 1
+def preview(files, output, start, themes_location):
+    if output:
+        print("Location: " + themes_location)
+        print("Start: " + str(start))
+    if start > 0:
+        x = start
+    else:
+        x = 1
     maximum = len(files)
-    for f in files:
-        if output:
-            print(f)
-        progress(x, maximum)
-        x += 1
-        preview_theme(f)
+    while True:
         print("\033[s", end="")
-        print("Options enter to continue, s to save, q to quit: ", end="")
+        print(files[x] + " enter to continue, s to save, q to quit:", end="")
+        preview_theme(files[x])
         choice = str(input())
         if choice == "s":
-            save(f)
-            exit(0)
+            save(files[x])
+            break
         elif choice == "q":
-            exit(0)
+            break
+        progress(x, maximum)
         print("\033[u\033[2K", end="")
+        x += 1
+        if x >= maximum:
+            break
 
 
 def main():
@@ -148,14 +155,11 @@ def main():
         print("2. There is no going back now!     ")
         print("3. There will be complete silence! ")
 
-    if output:
-        print("Location: " + themes_location)
-        print("Start at: " + str(start))
-
-    print("\033[1;" + str(int(rows) - 2) + "r")  # Change region temporarily by 2 rows while running the program
+    print("\033[1;" + str(int(rows) - 2) + "r", end="")  # Change region temporarily by 2 rows while running the program
     files = get_files(themes_location)
-    preview(files, output)
-    print("\033[1;" + rows + "r")  # Restores the region to the original position
+    preview(files, output, start, themes_location)
+    print("\033[0m", end="")
+    print("\033[1;" + rows + "r", end="")  # Restores the region to the original position
 
 
 if __name__ == '__main__':
