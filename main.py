@@ -4,6 +4,7 @@ import fileinput
 import sys
 import argparse
 from subprocess import call
+import keyboard
 
 
 def clear():
@@ -15,10 +16,16 @@ def containing(search, file):
 
 
 def save(theme_location):
-    with fileinput.FileInput("/home/erik/.Xresources", inplace=True, backup=".bak") as file:
-        replace = containing("#include", file)
-        for line in file:
-            print(line.replace(replace, "#include '" + theme_location + "'"))
+    with open("/home/erik/.Xresources.backup", "a") as new:
+        with open("/home/erik/.Xresources", "r") as old:
+            for line in old.readlines():
+                if "#include" not in line:
+                    new.write(line)
+                else:
+                    new.write("#include \"" + theme_location + "\"\n")
+    home = os.path.expanduser("~")
+    os.rename(home + "/.Xresources", home + "/.Xresources.bak")
+    os.rename(home + "/.Xresources.backup", home + "/.Xresources")
 
 
 def progress(curr, highest):  # Print a progress bar showing how many files there are and how many you have passed
@@ -27,22 +34,27 @@ def progress(curr, highest):  # Print a progress bar showing how many files ther
     start_string_len = len(" " + str(curr) + "/" + str(highest) + " [")
     end_string_len = len("] 100% ")
     total = start_string_len + end_string_len
-    width = columns - total
+    width = int(columns) - total
     parts = width / highest
     string_one_parts = parts * curr
     string_two_parts = parts * (highest - curr)
-    string_one = "#" * string_one_parts
-    string_two = "." * string_two_parts
+    string_one = "#" * int(string_one_parts)
+    string_two = "." * int(string_two_parts)
 
     print("\033[s", end="")
     print("\033[" + rows + ";1H", end="")
     print("\033[2K", end="")
-    print(curr + "/" + highest + " [" + string_one + string_two + "] " + str(percentage) + "%% ", end="")
+    print(str(curr) + "/" + str(highest) + " [" + string_one + string_two + "] " + str(int(percentage)) + "% ", end="")
     print("\033[u", end="")
 
 
-def preview(themes_location):
-    print(themes_location)
+def get_files(themes_location):
+    files = []
+    for r, d, f in os.walk(themes_location):
+        for file in f:
+            if file != "." or file != "..":
+                files.append(os.path.join(r, file))
+    return files
 
 
 def usage():
@@ -56,6 +68,39 @@ def usage():
     parser.add_argument("-s, --start", default="0", metavar="number", help="a number that tells which of the n number "
                                                                            "of files to start from.")
     parser.print_help()
+
+
+def preview_theme(path):
+    with open(path, "r") as file:
+        for line in file.readlines():
+            if "*.foreground" in line:
+                if "#" in line:
+                    value = "#" + line.split("#")[1] + "\007"
+                    print("\033]10;" + value, end="")
+            if "*.background" in line:
+                if "#" in line:
+                    value = "#" + line.split("#")[1] + "\007"
+                    print("\033]11;" + value, end="")
+
+
+def preview(files, output):
+    x = 1
+    maximum = len(files)
+    for f in files:
+        if output:
+            print(f)
+        progress(x, maximum)
+        x += 1
+        preview_theme(f)
+        print("\033[s", end="")
+        print("Options enter to continue, s to save, q to quit: ", end="")
+        choice = str(input())
+        if choice == "s":
+            save(f)
+            exit(0)
+        elif choice == "q":
+            exit(0)
+        print("\033[u\033[2K", end="")
 
 
 def main():
@@ -87,8 +132,6 @@ def main():
 
     if not argv:
         usage()
-        print("")
-        print("There must be some arguments!")
         sys.exit()
 
     themes_location = argv[0]
@@ -110,7 +153,8 @@ def main():
         print("Start at: " + str(start))
 
     print("\033[1;" + str(int(rows) - 2) + "r")  # Change region temporarily by 2 rows while running the program
-    preview(themes_location)
+    files = get_files(themes_location)
+    preview(files, output)
     print("\033[1;" + rows + "r")  # Restores the region to the original position
 
 

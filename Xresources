@@ -1,0 +1,41 @@
+URxvt*foreground: #FFFFFF
+URxvt*background: #000000
+URxvt*font: xft:xos4 Terminus:size=10
+!URxvt*font: xft:Source Code Pro:size=10
+!URxvt*font: Roboto\ Sans:size=10
+!URxvt*font: xft:Noto\ Sans:size=10
+URxvt*scrollBar: false
+URxvt*transparent: true
+URxvt*shading: 20
+URxvt.iso14755: true
+URxvt.iso14755_52: false
+URxvt.url-launcher: /sbin/xdg-open
+URxvt.keysym.Shift-Control-V: eval:paste_clipboard
+URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
+!include "git/iTerm2-Color-Schemes/Xresources/FirefoxDev"
+#include "/home/erik/git/Xresources-themes/arcadia_Twilight.Xresources"
+
+! Enable the extended coloring options
+rofi.color-enabled: true
+!                  bg       border   separator
+rofi.color-window: #121212, #a89984, #a89984
+!                  bg       fg       bg-alt   hl-bg    hl-fg
+rofi.color-normal: #282828, #ebdbb2, #32302f, #665c54, #fbf1c7
+rofi.color-active: #d79921, #282828, #d79921, #fabd2f, #282828
+rofi.color-urgent: #cc241d, #282828, #cc241d, #fb4934, #282828
+
+rofi.separator-style: solid
+!rofi.sidebar-mode: true
+rofi.bw: 1
+rofi.columns: 1
+rofi.padding: 16
+
+rofi.yoffset: 0
+rofi.fake-transparency: false
+rofi.location: 0
+rofi.width: 50
+!rofi.font: xos4 Terminus 14
+rofi.font: Roboto 14
+rofi.lines: 15
+rofi.fixed-num-lines: true
+rofi.modi: run
