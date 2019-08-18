@@ -4,6 +4,7 @@ import fileinput
 import sys
 import argparse
 from subprocess import call
+import re
 
 
 def clear():
@@ -51,8 +52,12 @@ def get_files(themes_location):
     files = []
     for r, d, f in os.walk(themes_location):
         for file in f:
-            if file != "." or file != "..":
-                files.append(os.path.join(r, file))
+            if file not in (".", "..", "README.md", "LICENSE", "exclude", "HEAD", "master",
+                            "config", "packed-refs", "index", "description"):
+                if not re.search(".*.idx", file) \
+                    and not re.search(".*.pack", file) \
+                        and not re.search(".*.sample", file):
+                    files.append(os.path.join(r, file))
     return files
 
 
@@ -72,41 +77,76 @@ def usage():
 def preview_theme(path):
     with open(path, "r") as file:
         for line in file.readlines():
-            if "*.foreground" in line:
-                if "#" in line:
-                    value = "#" + line.split("#")[1]
-                    value = value.strip("\r").strip("\n")
-                    print("\033]10;" + value + "\007", end="")
-            if "*.background" in line:
-                if "#" in line:
-                    value = "#" + line.split("#")[1]
-                    value = value.strip("\r").strip("\n")
-                    print("\033]11;" + value + "\007", end="")
-    call("ls")
+            code = ""
+            value = ""
+            if ".foreground" in line:
+                code = "10;"
+            elif ".background" in line:
+                code = "11;"
+            elif ".curcorColor" in line:
+                code = "12;"
+            elif ".color0" in line:
+                code = "4;0;"
+            elif ".color1" in line:
+                code = "4;1;"
+            elif ".color2" in line:
+                code = "4;2;"
+            elif ".color3" in line:
+                code = "4;3;"
+            elif ".color4" in line:
+                code = "4;4;"
+            elif ".color5" in line:
+                code = "4;5;"
+            elif ".color6" in line:
+                code = "4;6;"
+            elif ".color7" in line:
+                code = "4;7;"
+            elif ".color8" in line:
+                code = "4;8;"
+            elif ".color9" in line:
+                code = "4;9;"
+            elif ".color10" in line:
+                code = "4;10;"
+            elif ".color11" in line:
+                code = "4;11;"
+            elif ".color12" in line:
+                code = "4;12;"
+            elif ".color13" in line:
+                code = "4;13;"
+            elif ".color14" in line:
+                code = "4;14;"
+            elif ".color15" in line:
+                code = "4;15;"
+            if line.__contains__("#"):
+                value = "#" + line.split("#")[1].strip("\r").strip("\n")
+            if value != "" and code != "":
+                print("\033]" + code + value + "\007", end="")
+    # call(executable="ls", args="--color=auto")
+    # call("bash")
 
 
 def preview(files, output, start, themes_location):
     if output:
         print("Location: " + themes_location)
         print("Start: " + str(start))
+        print("Keys: Enter to continue, s to save, q to quit")
     if start > 0:
         x = start
     else:
         x = 1
     maximum = len(files)
     while True:
-        print(files[x])
+        print(files[x], end="")
         preview_theme(files[x])
         progress(x, maximum)
-        print("\033[s", end="")
-        print("Enter to continue, s to save, q to quit:", end="")
+        # print("\033[s", end="")
         choice = str(input())
         if choice == "s":
             save(files[x])
             break
         elif choice == "q":
             break
-        print("\033[u\033[2K", end="")
+        # print("\033[u\033[2K", end="")
         x += 1
         if x >= maximum:
             break
