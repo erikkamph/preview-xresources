@@ -1,10 +1,12 @@
 import getopt
 import os
 import fileinput
+import subprocess
 import sys
 import argparse
 from subprocess import call
 import re
+import shlex
 
 
 def clear():
@@ -40,8 +42,16 @@ def progress(curr, highest):  # Print a progress bar showing how many files ther
     string_two_parts = parts * (highest - curr)
     string_one = "#" * int(string_one_parts)
     string_two = "." * int(string_two_parts)
+    rowsminusone = int(rows) - 1
+    cmd = "ls --color=always"
+    args = shlex.split(cmd)
+    output, err = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    printable = str(output).strip("\'b").replace("\\x1b", "\033").replace("\\n", " ")
 
     print("\033[s", end="")
+    print("\033[" + str(rowsminusone) + ";1H", end="")
+    print("\033[2K", end="")
+    print(printable, end="")
     print("\033[" + rows + ";1H", end="")
     print("\033[2K", end="")
     print(str(curr) + "/" + str(highest) + " [" + string_one + string_two + "] " + str(int(percentage)) + "% ", end="")
@@ -74,55 +84,82 @@ def usage():
     parser.print_help()
 
 
-def preview_theme(path):
-    with open(path, "r") as file:
-        for line in file.readlines():
-            code = ""
+def getcode(line):
+    code = ""
+    if re.search(".*foreground:.*", line):
+        code = "10;"
+    elif re.search(".*background:.*", line):
+        code = "11;"
+    elif re.search(".*cursorColor:.*", line):
+        code = "12;"
+    elif re.search(".*color0:.*", line):
+        code = "4;0;"
+    elif re.search(".*color1:.*", line):
+        code = "4;1;"
+    elif re.search(".*color2:.*", line):
+        code = "4;2;"
+    elif re.search(".*color3:.*", line):
+        code = "4;3;"
+    elif re.search(".*color4:.*", line):
+        code = "4;4;"
+    elif re.search(".*color5:.*", line):
+        code = "4;5;"
+    elif re.search(".*color6:.*", line):
+        code = "4;6;"
+    elif re.search(".*color7:.*", line):
+        code = "4;7;"
+    elif re.search(".*color8:.*", line):
+        code = "4;8;"
+    elif re.search(".*color9:.*", line):
+        code = "4;9;"
+    elif re.search(".*color10:.*", line):
+        code = "4;10;"
+    elif re.search(".*color11:.*", line):
+        code = "4;11;"
+    elif re.search(".*color12:.*", line):
+        code = "4;12;"
+    elif re.search(".*color13:.*", line):
+        code = "4;13;"
+    elif re.search(".*color14:.*", line):
+        code = "4;14;"
+    elif re.search(".*color15:.*", line):
+        code = "4;15;"
+    return code
+
+
+def base16previewer(file):
+    valuedict = {}
+    with open(file, "r") as f:
+        for line in f:
+            if re.search("#define.*", line):
+                key = line.split(" ")[1]
+                value = line.split(" ")[2].strip("\r").strip("\n")
+                valuedict[key] = value
+    # print(valuedict)
+    with open(file, "r") as f:
+        for line in f:
+            code = getcode(line)
             value = ""
-            if ".foreground" in line:
-                code = "10;"
-            elif ".background" in line:
-                code = "11;"
-            elif ".curcorColor" in line:
-                code = "12;"
-            elif ".color0" in line:
-                code = "4;0;"
-            elif ".color1" in line:
-                code = "4;1;"
-            elif ".color2" in line:
-                code = "4;2;"
-            elif ".color3" in line:
-                code = "4;3;"
-            elif ".color4" in line:
-                code = "4;4;"
-            elif ".color5" in line:
-                code = "4;5;"
-            elif ".color6" in line:
-                code = "4;6;"
-            elif ".color7" in line:
-                code = "4;7;"
-            elif ".color8" in line:
-                code = "4;8;"
-            elif ".color9" in line:
-                code = "4;9;"
-            elif ".color10" in line:
-                code = "4;10;"
-            elif ".color11" in line:
-                code = "4;11;"
-            elif ".color12" in line:
-                code = "4;12;"
-            elif ".color13" in line:
-                code = "4;13;"
-            elif ".color14" in line:
-                code = "4;14;"
-            elif ".color15" in line:
-                code = "4;15;"
-            if line.__contains__("#"):
-                value = "#" + line.split("#")[1].strip("\r").strip("\n")
+            if re.search("base[0-9]+.$", line):
+                x = len(line) - 7
+                key = line[x:].strip("\r").strip("\n")
+                value = valuedict[key]
             if value != "" and code != "":
                 print("\033]" + code + value + "\007", end="")
-    # call(executable="ls", args="--color=auto")
-    # call("bash")
+
+
+def preview_theme(path):
+    if path.__contains__("base16"):
+        base16previewer(path)
+    else:
+        with open(path, "r") as file:
+            for line in file.readlines():
+                code = getcode(line)
+                value = ""
+                if line.__contains__("#"):
+                    value = "#" + line.split("#")[1].strip("\r").strip("\n")
+                if value != "" and code != "":
+                    print("\033]" + code + value + "\007", end="")
 
 
 def preview(files, output, start, themes_location):
@@ -134,7 +171,7 @@ def preview(files, output, start, themes_location):
         x = start
     else:
         x = 1
-    maximum = len(files)
+    maximum = len(files) - 1
     while True:
         print(files[x], end="")
         preview_theme(files[x])
@@ -146,9 +183,12 @@ def preview(files, output, start, themes_location):
             break
         elif choice == "q":
             break
+        elif re.search("command:.*", choice):
+            command = choice.split(":")[1]
+            call(command)
         # print("\033[u\033[2K", end="")
         x += 1
-        if x >= maximum:
+        if x > maximum:
             break
 
 
@@ -200,7 +240,7 @@ def main():
     print("\033[1;" + str(int(rows) - 2) + "r", end="")  # Change region temporarily by 2 rows while running the program
     files = get_files(themes_location)
     preview(files, output, start, themes_location)
-    print("\033[0m", end="")
+    # print("\033[0m", end="")
     print("\033[1;" + rows + "r", end="")  # Restores the region to the original position
 
 
