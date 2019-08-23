@@ -5,7 +5,7 @@ Tested with following:
 - [x] Urxvt
 - [x] xterm
 - [x] uxterm
-- [] zsh
+- [ ] zsh
 ###
 Should work in other terminals as long as dynamic colors is applied, for urxvt, you will need the following line:
 ```
