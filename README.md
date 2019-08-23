@@ -18,8 +18,11 @@ URxvt*dynamicColors: on
 - [x] Translation from base16-* files to colors in bash
 - [x] Saving of current theme in .Xresource file located in ~/
 - [x] Sending commands with for example ``` command:bash ```
-- [] Translating other theme files to colors in bash
+- [ ] Translating other theme files to colors in bash
 
 ### Community functions
 If you have any ideas for improving the script or just any feature to add, tell me don't be shy, I won't bite.
 I am studying full time so I may not have time for everything, but will try to improve or implement it if it's valuable. 
+
+## Example
+![Example run of the program](example.png)
