@@ -26,3 +26,9 @@ I am studying full time so I may not have time for everything, but will try to i
 
 ## Example
 ![Example run of the program](example.png)
+
+## Extra
+The file called "ThemePreviewer" is a man page which you can do either:
+- [x] ``` man ./ThemePreviewer"
+- [x] ``` man --local-file ThemePreviewer ```
+
