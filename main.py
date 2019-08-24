@@ -4,6 +4,7 @@ import fileinput
 import subprocess
 import sys
 import argparse
+import textwrap
 from subprocess import call
 import re
 import shlex
@@ -72,15 +73,36 @@ def get_files(themes_location):
 
 
 def usage():
-    parser = argparse.ArgumentParser(description="preview Xresource theme files before choosing theme for your "
-                                                 "urxvt-sensible-terminal")
+    #parser = argparse.ArgumentParser(description="preview Xresource- and base16-theme files before saving "
+    #                                             "the theme and reloading by either:"
+    #                                             "1. xrdb --merge"
+    #                                             "2. Restarting the computer")
+    parser = argparse.ArgumentParser(description=textwrap.dedent('''
+         description:
+         A program for previewing Xresource- and base16
+         theme files before applying the theme to the terminal.
+         After applying the theme by pressing s do one of following:
+            - xrdb --merge
+            - Restart computer
+         
+         You could also send commands through the script using
+         command:<command>, where <command> can be for instance
+         bash, cd, ls or anything just without arguments.
+         
+         Quitting the program is also easy, just press q and
+         then hit ENTER to exit the program without doing
+         CTRL+C.
+         '''), formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-o, --output", help="used to enable/disable printable output. like which file we are "
                                              "looking at or which folder you wrote for input.", action='store_true')
-    parser.add_argument("-v, --version", action="version", version="%(prog)s 2.0")
+    parser.add_argument("-v, --version", action="version", version="%(prog)s 1.5")
     parser.add_argument("folder", help="the location of the folder containing any number of xresource files greater "
                                        "than 0")
     parser.add_argument("-s, --start", default="0", metavar="number", help="a number that tells which of the n number "
                                                                            "of files to start from.")
+    parser.add_argument("-d, --ls", metavar="folder", help="A folder to display contents of while running the program"
+                                                           " just to see more colors, if not specified current dir will"
+                                                           " be used as output instead!")
     parser.print_help()
 
 
@@ -194,7 +216,7 @@ def preview(files, output, start, themes_location):
 
 def main():
     try:
-        opts, argv = getopt.getopt(sys.argv[1:], "hovs:", ["help", "output", "version", "start="])
+        opts, argv = getopt.getopt(sys.argv[1:], "hovs:d:", ["help", "output", "version", "start=", "ls="])
     except getopt.GetoptError as error:
         print(error.__str__())
         usage()
@@ -215,6 +237,8 @@ def main():
             sys.exit()
         elif o in ("-s", "--start"):
             start = int(a)
+        elif o in ("-d", "--ls"):
+            dir = a
         else:
             usage()
             assert False, "There is no option like that."
@@ -237,7 +261,7 @@ def main():
         print("2. There is no going back now!     ")
         print("3. There will be complete silence! ")
 
-    print("\033[1;" + str(int(rows) - 2) + "r", end="")  # Change region temporarily by 2 rows while running the program
+    print("\033[1;" + str(int(rows) - 3) + "r", end="")  # Change region temporarily by 2 rows while running the program
     files = get_files(themes_location)
     preview(files, output, start, themes_location)
     # print("\033[0m", end="")

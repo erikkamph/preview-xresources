@@ -3,9 +3,26 @@
 .SH NAME
 ThemePreviewer \- manual page for ThemePreviewer 1.0
 .SH DESCRIPTION
-usage: main.py [\-h] [\-o, \fB\-\-output]\fR [\-v, \fB\-\-version]\fR [\-s, \fB\-\-start\fR number] folder
+usage: main.py [\-h] [\-o, \fB\-\-output]\fR [\-v, \fB\-\-version]\fR [\-s, \fB\-\-start\fR number]
+.IP
+[\-d, \fB\-\-ls\fR folder]
+folder
 .PP
-preview Xresource theme files before choosing theme for your urxvt\-sensibleterminal
+description:
+A program for previewing Xresource\- and base16
+theme files before applying the theme to the terminal.
+After applying the theme by pressing s do one of following:
+.IP
+\- xrdb \fB\-\-merge\fR
+\- Restart computer
+.PP
+You could also send commands through the script using
+command:<command>, where <command> can be for instance
+bash, cd, ls or anything just without arguments.
+.PP
+Quitting the program is also easy, just press q and
+then hit ENTER to exit the program without doing
+CTRL+C.
 .SS "positional arguments:"
 .TP
 folder
@@ -26,6 +43,11 @@ show program's version number and exit
 \fB\-s\fR, \fB\-\-start\fR number
 a number that tells which of the n number of files to
 start from.
+.TP
+\fB\-d\fR, \fB\-\-ls\fR folder
+A folder to display contents of while running the
+program just to see more colors, if not specified
+current dir will be used as output instead!
 .SH "SEE ALSO"
 The full documentation for
 .B ThemePreviewer
