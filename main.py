@@ -86,8 +86,12 @@ def usage():
             - Restart computer
          
          You could also send commands through the script using
-         command:<command>, where <command> can be for instance
-         bash, cd, ls or anything just without arguments.
+         command:<command>, where <command> can for instance be:
+            - ls --color=none
+            - pwd
+         NOTE: Using pipes is experimental right now, it doesn't
+         always work and the output is sometimes the command which
+         was sent into the "command:".
          
          Quitting the program is also easy, just press q and
          then hit ENTER to exit the program without doing
@@ -184,6 +188,20 @@ def preview_theme(path):
                     print("\033]" + code + value + "\007", end="")
 
 
+def print_colors():
+    print("\033[s", end="")
+    from_right = int(columns) - 55
+    x = 1
+    for i in range(2):
+        for j in range(30, 38):
+            print("\033[" + str(x) + ";" + str(from_right) + "H", end="")
+            for k in range(40, 48):
+                print("\33[%d;%d;%dm%d;%d;%d\33[m\007" % (i, j, k, i, j, k), end="")
+            print()
+            x += 1
+    print("\033[u", end="")
+
+
 def preview(files, output, start, themes_location):
     if output:
         print("Location: " + themes_location)
@@ -197,6 +215,8 @@ def preview(files, output, start, themes_location):
     while True:
         print(files[x], end="")
         preview_theme(files[x])
+        if output:
+            print_colors()
         progress(x, maximum)
         # print("\033[s", end="")
         choice = str(input())
@@ -207,7 +227,10 @@ def preview(files, output, start, themes_location):
             break
         elif re.search("command:.*", choice):
             command = choice.split(":")[1]
-            call(command)
+            args = shlex.split(command)
+            output, error = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            printable = str(output)
+            print(printable)
         # print("\033[u\033[2K", end="")
         x += 1
         if x > maximum:
