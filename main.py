@@ -192,7 +192,7 @@ def print_colors():
     print("\033[s", end="")
     from_right = int(columns) - 55
     x = 1
-    for i in range(2):
+    for i in range(5):
         for j in range(30, 38):
             print("\033[" + str(x) + ";" + str(from_right) + "H", end="")
             for k in range(40, 48):
