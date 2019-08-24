@@ -31,7 +31,7 @@ I am studying full time so I may not have time for everything, but will try to i
 ### Example 2
 ![Example run #2 of the program](example2.png)
 ### Example 3
-![Example run #3 of the program](example3.png)
+![Example run #3 of the program](example4.png)
 
 ## Extra
 The file called "ThemePreviewer" is a man page which you can do one of following commands to view:
