@@ -73,10 +73,6 @@ def get_files(themes_location):
 
 
 def usage():
-    #parser = argparse.ArgumentParser(description="preview Xresource- and base16-theme files before saving "
-    #                                             "the theme and reloading by either:"
-    #                                             "1. xrdb --merge"
-    #                                             "2. Restarting the computer")
     parser = argparse.ArgumentParser(description=textwrap.dedent('''
          description:
          A program for previewing Xresource- and base16
@@ -108,8 +104,8 @@ def usage():
                                                            " just to see more colors, if not specified current dir will"
                                                            " be used as output instead!")
     parser.add_argument("-b, --blocks", metavar="colors", default="2", help="a number used for displaying color blocks"
-                                                                            "on the right side of the screen, if this"
-                                                                            "option is left out it will default to 2.")
+                                                                            " on the right side of the screen, if this"
+                                                                            " option is left out it will default to 2.")
     parser.print_help()
 
 

@@ -57,8 +57,8 @@ program just to see more colors, if not specified
 current dir will be used as output instead!
 .TP
 \fB\-b\fR, \fB\-\-blocks\fR colors
-a number used for displaying color blockson the right
-side of the screen, if thisoption is left out it will
+a number used for displaying color blocks on the right
+side of the screen, if this option is left out it will
 default to 2.
 .SH "SEE ALSO"
 The full documentation for
