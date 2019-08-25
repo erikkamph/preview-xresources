@@ -107,6 +107,9 @@ def usage():
     parser.add_argument("-d, --ls", metavar="folder", help="A folder to display contents of while running the program"
                                                            " just to see more colors, if not specified current dir will"
                                                            " be used as output instead!")
+    parser.add_argument("-b, --blocks", metavar="colors", default="2", help="a number used for displaying color blocks"
+                                                                            "on the right side of the screen, if this"
+                                                                            "option is left out it will default to 2.")
     parser.print_help()
 
 
@@ -188,11 +191,11 @@ def preview_theme(path):
                     print("\033]" + code + value + "\007", end="")
 
 
-def print_colors():
+def print_colors(blocks):
     print("\033[s", end="")
     from_right = int(columns) - 55
     x = 1
-    for i in range(5):
+    for i in range(blocks):
         for j in range(30, 38):
             print("\033[" + str(x) + ";" + str(from_right) + "H", end="")
             for k in range(40, 48):
@@ -202,7 +205,7 @@ def print_colors():
     print("\033[u", end="")
 
 
-def preview(files, output, start, themes_location):
+def preview(files, output, start, themes_location, blocks):
     if output:
         print("Location: " + themes_location)
         print("Start: " + str(start))
@@ -216,7 +219,7 @@ def preview(files, output, start, themes_location):
         print(files[x], end="")
         preview_theme(files[x])
         if output:
-            print_colors()
+            print_colors(blocks)
         progress(x, maximum)
         # print("\033[s", end="")
         choice = str(input())
@@ -229,7 +232,7 @@ def preview(files, output, start, themes_location):
             command = choice.split(":")[1]
             args = shlex.split(command)
             output, error = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-            printable = str(output)
+            printable = str(output)[2:].replace("'", "").replace("\\n", " ").replace("\\x1b", "\x1b")
             print(printable)
         # print("\033[u\033[2K", end="")
         x += 1
@@ -239,7 +242,7 @@ def preview(files, output, start, themes_location):
 
 def main():
     try:
-        opts, argv = getopt.getopt(sys.argv[1:], "hovs:d:", ["help", "output", "version", "start=", "ls="])
+        opts, argv = getopt.getopt(sys.argv[1:], "hovs:d:b:", ["help", "output", "version", "start=", "ls=", "blocks="])
     except getopt.GetoptError as error:
         print(error.__str__())
         usage()
@@ -248,6 +251,7 @@ def main():
     output = None
     themes_location = None
     start = 0
+    blocks = 2
 
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -262,6 +266,11 @@ def main():
             start = int(a)
         elif o in ("-d", "--ls"):
             dir = a
+        elif o in ("-b", "--blocks"):
+            blocks = int(a)
+            if blocks <= 0:
+                usage()
+                sys.exit()
         else:
             usage()
             assert False, "There is no option like that."
@@ -286,7 +295,7 @@ def main():
 
     print("\033[1;" + str(int(rows) - 3) + "r", end="")  # Change region temporarily by 2 rows while running the program
     files = get_files(themes_location)
-    preview(files, output, start, themes_location)
+    preview(files=files, output=output, start=start, themes_location=themes_location, blocks=blocks)
     # print("\033[0m", end="")
     print("\033[1;" + rows + "r", end="")  # Restores the region to the original position
 
