@@ -1,3 +1,6 @@
+# A Theme previewer program for Xresources and base16
+# Copyright 2019 © Erik Kamph
+
 import getopt
 import os
 import fileinput
