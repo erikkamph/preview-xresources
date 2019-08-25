@@ -22,14 +22,13 @@ def containing(search, file):
 
 
 def save(theme_location):
-    with open("/home/erik/.Xresources.backup", "a") as new:
-        with open("/home/erik/.Xresources", "r") as old:
+    with open(home + "/.Xresources.backup", "a") as new:
+        with open(home + "/.Xresources", "r") as old:
             for line in old.readlines():
                 if "#include" not in line:
                     new.write(line)
                 else:
                     new.write("#include \"" + theme_location + "\"\n")
-    home = os.path.expanduser("~")
     os.rename(home + "/.Xresources", home + "/.Xresources.bak")
     os.rename(home + "/.Xresources.backup", home + "/.Xresources")
 
@@ -306,5 +305,6 @@ def main():
 
 if __name__ == '__main__':
     rows, columns = os.popen("stty size", "r").read().split()
+    home = os.path.expanduser("~")
     main()
     sys.exit()
