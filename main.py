@@ -219,7 +219,8 @@ def preview(files, output, start, themes_location, blocks, dir):
         print(files[x], end="")
         preview_theme(files[x])
         if output:
-            print_colors(blocks)
+            if blocks > 0:
+                print_colors(blocks)
         progress(x, maximum, dir)
         # print("\033[s", end="")
         choice = str(input())
@@ -268,7 +269,7 @@ def main():
             dir = str(a)
         elif o in ("-b", "--blocks"):
             blocks = int(a)
-            if blocks <= 0:
+            if blocks < 0:
                 usage()
                 sys.exit()
         else:
