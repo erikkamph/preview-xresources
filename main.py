@@ -31,7 +31,7 @@ def save(theme_location):
     os.rename(home + "/.Xresources.backup", home + "/.Xresources")
 
 
-def progress(curr, highest):  # Print a progress bar showing how many files there are and how many you have passed
+def progress(curr, highest, dir):  # Print a progress bar showing how many files there are and how many you have passed
     # rows, columns = os.popen('stty size', "r").read().split()
     percentage = (curr / highest) * 100
     start_string_len = len(" " + str(curr) + "/" + str(highest) + " [")
@@ -44,7 +44,11 @@ def progress(curr, highest):  # Print a progress bar showing how many files ther
     string_one = "#" * int(string_one_parts)
     string_two = "." * int(string_two_parts)
     rowsminusone = int(rows) - 1
-    cmd = "ls --color=always"
+    cmd = ""
+    if dir != "":
+        cmd = "ls --color=always " + str(dir)
+    else:
+        cmd = "ls --color=always"
     args = shlex.split(cmd)
     output, err = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     printable = str(output).strip("\'b").replace("\\x1b", "\033").replace("\\n", " ")
@@ -201,7 +205,7 @@ def print_colors(blocks):
     print("\033[u", end="")
 
 
-def preview(files, output, start, themes_location, blocks):
+def preview(files, output, start, themes_location, blocks, dir):
     if output:
         print("Location: " + themes_location)
         print("Start: " + str(start))
@@ -216,7 +220,7 @@ def preview(files, output, start, themes_location, blocks):
         preview_theme(files[x])
         if output:
             print_colors(blocks)
-        progress(x, maximum)
+        progress(x, maximum, dir)
         # print("\033[s", end="")
         choice = str(input())
         if choice == "s":
@@ -245,9 +249,9 @@ def main():
         sys.exit(2)
 
     output = None
-    themes_location = None
     start = 0
     blocks = 2
+    dir = ""
 
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -261,7 +265,7 @@ def main():
         elif o in ("-s", "--start"):
             start = int(a)
         elif o in ("-d", "--ls"):
-            dir = a
+            dir = str(a)
         elif o in ("-b", "--blocks"):
             blocks = int(a)
             if blocks <= 0:
@@ -291,7 +295,7 @@ def main():
 
     print("\033[1;" + str(int(rows) - 3) + "r", end="")  # Change region temporarily by 2 rows while running the program
     files = get_files(themes_location)
-    preview(files=files, output=output, start=start, themes_location=themes_location, blocks=blocks)
+    preview(files=files, output=output, start=start, themes_location=themes_location, blocks=blocks, dir=dir)
     # print("\033[0m", end="")
     print("\033[1;" + rows + "r", end="")  # Restores the region to the original position
 
