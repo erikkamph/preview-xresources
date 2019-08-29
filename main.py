@@ -13,14 +13,17 @@ import re
 import shlex
 
 
+# Clears the screen
 def clear():
     _ = call("clear" if os.name == "posix" else "cls")
 
 
+# Searches in file, never used
 def containing(search, file):
     return [line for line in file if search in line]
 
 
+# Opens the current Xresources writes the new line and saves the old one as backup in case something wen wrong
 def save(theme_location):
     with open(home + "/.Xresources.backup", "a") as new:
         with open(home + "/.Xresources", "r") as old:
@@ -33,7 +36,8 @@ def save(theme_location):
     os.rename(home + "/.Xresources.backup", home + "/.Xresources")
 
 
-def progress(curr, highest, dir):  # Print a progress bar showing how many files there are and how many you have passed
+# Print a progress bar showing how many files there are and how many you have passed
+def progress(curr, highest, dir):
     # rows, columns = os.popen('stty size', "r").read().split()
     percentage = (curr / highest) * 100
     start_string_len = len(" " + str(curr) + "/" + str(highest) + " [")
@@ -65,6 +69,8 @@ def progress(curr, highest, dir):  # Print a progress bar showing how many files
     print("\033[u", end="")
 
 
+# Read all filenames and ignore everything that has to do with git
+# or something else that isn't Xresources or base16 files.
 def get_files(themes_location):
     files = []
     for r, d, f in os.walk(themes_location):
@@ -78,6 +84,7 @@ def get_files(themes_location):
     return files
 
 
+# Print the usage when something went wrong or -h is supplied
 def usage():
     parser = argparse.ArgumentParser(description=textwrap.dedent('''
          description:
@@ -115,6 +122,8 @@ def usage():
     parser.print_help()
 
 
+# For each line in the file there will be for example *.foreground: #123455, based on the *.foreground we have build an
+# return a code which we want to use later in when printing it in the terminal.
 def getcode(line):
     code = ""
     if re.search(".*foreground:.*", line):
@@ -158,6 +167,9 @@ def getcode(line):
     return code
 
 
+# If the file is base16, load all #define's as key value pairs
+# and read each line after that and print the correct escape
+# sequence in the terminal
 def base16previewer(file):
     valuedict = {}
     with open(file, "r") as f:
@@ -179,6 +191,7 @@ def base16previewer(file):
                 print("\033]" + code + value + "\007", end="")
 
 
+# If the theme is not base16 then just read it because the values will not be on any other place.
 def preview_theme(path):
     if path.__contains__("base16"):
         base16previewer(path)
@@ -193,6 +206,9 @@ def preview_theme(path):
                     print("\033]" + code + value + "\007", end="")
 
 
+# Prints blocks of colors in the top right corner of the screen,
+# if -b 0 is supplied none will be printed, otherwise the highest number recommended
+# is 7 for -b or --blocks.
 def print_colors(blocks):
     print("\033[s", end="")
     from_right = int(columns) - 55
@@ -207,6 +223,8 @@ def print_colors(blocks):
     print("\033[u", end="")
 
 
+# Prints location and where in the array we start, previews the theme and asks for a choice,
+# the choice can either be s to save, q to quit or command: followed by a bash-command.
 def preview(files, output, start, themes_location, blocks, dir):
     if output:
         print("Location: " + themes_location)
@@ -243,6 +261,7 @@ def preview(files, output, start, themes_location, blocks, dir):
             break
 
 
+# Parses the arguments and goes to the function above.
 def main():
     try:
         opts, argv = getopt.getopt(sys.argv[1:], "hovs:d:b:", ["help", "output", "version", "start=", "ls=", "blocks="])
