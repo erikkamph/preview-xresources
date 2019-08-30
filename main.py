@@ -230,10 +230,7 @@ def preview(files, output, start, themes_location, blocks, dir):
         print("Location: " + themes_location)
         print("Start: " + str(start))
         print("Keys: Enter to continue, s to save, q to quit")
-    if start > 0:
-        x = start
-    else:
-        x = 1
+    x = start
     maximum = len(files) - 1
     while True:
         print(files[x], end="")
