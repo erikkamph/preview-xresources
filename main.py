@@ -217,7 +217,7 @@ def print_colors(blocks):
         for j in range(30, 38):
             print("\033[" + str(x) + ";" + str(from_right) + "H", end="")
             for k in range(40, 48):
-                print("\33[%d;%d;%dm%d;%d;%d\33[m\007" % (i, j, k, i, j, k), end="")
+                print("\033[%d;%d;%dm%d;%d;%d\033[m\007" % (i, j, k, i, j, k), end="")
             print()
             x += 1
     print("\033[u", end="")
