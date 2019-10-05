@@ -241,6 +241,9 @@ def preview(files, output, start, themes_location, blocks, dir):
         progress(x, maximum, dir)
         # print("\033[s", end="")
         choice = str(input())
+        if re.search("m=", choice):
+            value = choice.split("=")[1]
+            x -= int(value)
         if choice == "s":
             save(files[x])
             break
