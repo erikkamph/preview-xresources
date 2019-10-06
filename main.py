@@ -91,8 +91,11 @@ def usage():
          A program for previewing Xresource- and base16
          theme files before applying the theme to the terminal.
          After applying the theme by pressing s do one of following:
-            - xrdb --merge
+            - xrdb --merge ~/.Xresources
             - Restart computer
+         "xrdb -merge ~/.Xresources" will be added later to the script
+         for automatic execution when saving the current theme to
+         .Xresources by typing "s" in when running the script.
          
          You could also send commands through the script using
          command:<command>, where <command> can for instance be:

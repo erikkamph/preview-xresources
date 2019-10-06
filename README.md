@@ -1,10 +1,7 @@
 # A theme previewer for Xresource and base16 theme files
 ### Description
 A program to preview .Xresource- or base16-files in a terminal.
-Tested with following:
-- [x] Urxvt
-- [x] xterm
-- [x] uxterm
+
 ###
 Should work in other terminals as long as dynamic colors is applied, for urxvt, you will need the following line:
 ```
@@ -23,6 +20,15 @@ URxvt*dynamicColors: on
 ### Community functions
 If you have any ideas for improving the script or just any feature to add, tell me don't be shy, I won't bite.
 I am studying full time so I may not have time for everything, but will try to improve or implement it if it's valuable. 
+
+## Commands when running
+command | what it does
+--------|-------------
+s 	| saves a copy of current Xresource-file and modifies it with the chosen theme
+q 	| exits without saving the chosen theme
+command:<command> | used to execute commands, where <command> is a shell command
+m=<value> | to preview <value> files again, e.g. equal to going back n steps.
+
 
 ## Example
 ### Example 1
