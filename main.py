@@ -23,6 +23,19 @@ def containing(search, file):
     return [line for line in file if search in line]
 
 
+# Reloads the resources using xrdb -merge
+def reload_resources():
+    command = "xrdb -merge " + home + "/.Xresources"
+    args = shlex.split(command)
+    output, err = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    out = len(str(output).split(":"))
+    error = len(str(err).split(":"))
+    if out > 1:
+        print(out)
+    if error > 1:
+        print("ERROR: " + error)
+
+
 # Opens the current Xresources writes the new line and saves the old one as backup in case something wen wrong
 def save(theme_location):
     with open(home + "/.Xresources.backup", "a") as new:
@@ -34,6 +47,7 @@ def save(theme_location):
                     new.write("#include \"" + theme_location + "\"\n")
     os.rename(home + "/.Xresources", home + "/.Xresources.bak")
     os.rename(home + "/.Xresources.backup", home + "/.Xresources")
+    reload_resources()
 
 
 # Print a progress bar showing how many files there are and how many you have passed
@@ -91,11 +105,10 @@ def usage():
          A program for previewing Xresource- and base16
          theme files before applying the theme to the terminal.
          After applying the theme by pressing s do one of following:
-            - xrdb --merge ~/.Xresources
+            - xrdb -merge ~/.Xresources
             - Restart computer
-         "xrdb -merge ~/.Xresources" will be added later to the script
-         for automatic execution when saving the current theme to
-         .Xresources by typing "s" in when running the script.
+         "xrdb -merge ~/.Xresources" now happens after pressing
+         "s" followed by return as input to the script.
          
          You could also send commands through the script using
          command:<command>, where <command> can for instance be:
