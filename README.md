@@ -27,7 +27,7 @@ command | what it does
 s 	| saves a copy of current Xresource-file and modifies it with the chosen theme
 q 	| exits without saving the chosen theme
 command:&lt;command&gt; | used to execute commands, where &lt;command&gt; is a shell command
-m=&ltvalue&gt; | to preview &lt;value&gt; files again, e.g. equal to going back n steps.
+m=&lt;value&gt; | to preview &lt;value&gt; files again, e.g. equal to going back n steps.
 
 
 ## Example
