@@ -42,5 +42,3 @@ m=&lt;value&gt; | to preview &lt;value&gt; files again, e.g. equal to going back
 The file called "ThemePreviewer" is a man page which you can do one of following commands to view:
 - [x] ``` man ./ThemePreviewer```
 - [x] ``` man --local-file ThemePreviewer ```
-
-# Recent Changes
