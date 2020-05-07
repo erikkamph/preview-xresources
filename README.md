@@ -8,6 +8,9 @@ Should work in other terminals as long as dynamic colors is applied, for urxvt, 
 URxvt*dynamicColors: on
 ```
 
+### Work In Progress
+- [ ] Write installer/uninstaller
+
 ### TODO List
 - [x] Progress bar as well as directory listing
 - [x] Translation from *.Xresource to colors in bash
@@ -15,7 +18,6 @@ URxvt*dynamicColors: on
 - [x] Saving of current theme in .Xresource file located in ~/
 - [x] Sending commands with for example ```command:bash```
 - [ ] Translating other theme files to colors in bash
-- [ ] Write installer/uninstaller
 
 ### Community functions
 If you have any ideas for improving the script or just any feature to add, tell me don't be shy, I won't bite.
