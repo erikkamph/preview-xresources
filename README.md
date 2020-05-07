@@ -4,7 +4,9 @@ A program to preview .Xresource- or base16-files in a terminal.
 
 ###
 Should work in other terminals as long as dynamic colors is applied, for urxvt, you will need the following line:
-```URxvt*dynamicColors: on```
+```
+URxvt*dynamicColors: on
+```
 
 ### TODO List
 - [x] Progress bar as well as directory listing
