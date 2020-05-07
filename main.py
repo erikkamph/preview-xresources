@@ -1,9 +1,9 @@
+#!/bin/python
 # A Theme previewer program for Xresources and base16
 # Copyright 2019 © Erik Kamph
 
 import getopt
 import os
-import fileinput
 import subprocess
 import sys
 import argparse
@@ -27,7 +27,8 @@ def containing(search, file):
 def reload_resources():
     command = "xrdb -merge " + home + "/.Xresources"
     args = shlex.split(command)
-    output, err = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    output, err = subprocess.Popen(args, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE).communicate()
     out = len(str(output).split(":"))
     error = len(str(err).split(":"))
     if out > 1:
@@ -36,19 +37,18 @@ def reload_resources():
         print("ERROR: " + error)
 
 
-# Opens the current Xresources writes the new line and saves the old one as backup in case something wen wrong
+# Removes the current .xtheme from $HOME/.xtheme if there is one
+# Adds a symbolic link to the chosen theme named .xtheme in $HOME/.xtheme
+# Reloads the .Xresources
 def save(theme_location):
-    with open(home + "/.Xresources.backup", "a") as new:
-        with open(home + "/.Xresources", "r") as old:
-            for line in old.readlines():
-                if "#include" not in line:
-                    new.write(line)
-                else:
-                    new.write("#include \"" + theme_location + "\"\n")
-    os.rename(home + "/.Xresources", home + "/.Xresources.bak")
-    os.rename(home + "/.Xresources.backup", home + "/.Xresources")
+    location = theme_location
+    if re.search("^./", location):
+        work_dir = os.getcwd()
+        location = theme_location.replace(".", work_dir, 1)
+    if os.path.exists(home + "/.xtheme"):
+        os.remove(home + "/.xtheme")
+    os.symlink(location, home + "/.xtheme", target_is_directory=False)
     reload_resources()
-
 
 # Print a progress bar showing how many files there are and how many you have passed
 def progress(curr, highest, dir):
@@ -70,7 +70,8 @@ def progress(curr, highest, dir):
     else:
         cmd = "ls --color=always"
     args = shlex.split(cmd)
-    output, err = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    output, err = subprocess.Popen(args, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE).communicate()
     printable = str(output).strip("\'b").replace("\\x1b", "\033").replace("\\n", " ")
 
     print("\033[s", end="")
@@ -243,7 +244,11 @@ def print_colors(blocks):
 # the choice can either be s to save, q to quit or command: followed by a bash-command.
 def preview(files, output, start, themes_location, blocks, dir):
     if output:
-        print("Location: " + themes_location)
+        if "./" in themes_location:
+            work_dir = os.getcwd()
+            print("Location: " + work_dir)
+        else:
+            print("Location: " + themes_location)
         print("Start: " + str(start))
         print("Keys: Enter to continue, s to save, q to quit")
     x = start
